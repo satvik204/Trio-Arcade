@@ -6,7 +6,7 @@
         ".write": "auth != null && ((!data.exists() && newData.child('host').val() === auth.uid && newData.child('players').child(auth.uid).exists()) || (data.exists() && !newData.exists() && data.child('host').val() === auth.uid))",
         "players": {
           "$uid": {
-            ".write": "auth != null && auth.uid === $uid && (data.exists() || data.parent().numChildren() < 3)",
+            ".write": "auth != null && auth.uid === $uid",
             ".validate": "newData.hasChildren(['name','joined']) && newData.child('name').isString() && newData.child('name').val().length <= 18 && newData.child('joined').isNumber()"
           }
         },
