@@ -17,7 +17,6 @@ jobs:
         run: |
           SDK_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           echo "SDK directory: $SDK_HOME"
-          ls "$SDK_HOME" || true
           SDKMGR="$(find "$SDK_HOME/cmdline-tools" -type f -name sdkmanager 2>/dev/null | head -n 1)"
           if [ -n "$SDKMGR" ]; then
             yes | "$SDKMGR" 'platforms;android-35' 'build-tools;35.0.0' || true
@@ -26,7 +25,11 @@ jobs:
         with:
           gradle-version: '8.9'
       - run: gradle --no-daemon assembleDebug
+      - name: Verify APK signature
+        run: |
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -Vr | head -n 1)"
+          "$APKSIGNER" verify --verbose --print-certs app/build/outputs/apk/debug/app-debug.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: subway-pilot-debug-apk
+          name: subway-pilot-android16-apk
           path: app/build/outputs/apk/debug/app-debug.apk
