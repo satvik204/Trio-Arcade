@@ -13,7 +13,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Configure Android SDK
+        run: |
+          SDK_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "SDK directory: $SDK_HOME"
+          ls "$SDK_HOME" || true
+          SDKMGR="$(find "$SDK_HOME/cmdline-tools" -type f -name sdkmanager 2>/dev/null | head -n 1)"
+          if [ -n "$SDKMGR" ]; then
+            yes | "$SDKMGR" 'platforms;android-35' 'build-tools;35.0.0' || true
+          fi
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
